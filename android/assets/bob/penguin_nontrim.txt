@@ -1,0 +1,26 @@
+penguin_nontrim.png
+size: 1719, 287
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Penguin-1
+  rotate: false
+  xy: 1, 1
+  size: 571, 285
+  orig: 571, 285
+  offset: 0, 0
+  index: -1
+Penguin-2
+  rotate: false
+  xy: 574, 1
+  size: 571, 285
+  orig: 571, 285
+  offset: 0, 0
+  index: -1
+Penguin-3
+  rotate: false
+  xy: 1147, 1
+  size: 571, 285
+  orig: 571, 285
+  offset: 0, 0
+  index: -1

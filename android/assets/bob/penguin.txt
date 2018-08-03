@@ -1,0 +1,26 @@
+penguin.png
+size: 800, 512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Penguin-1
+  rotate: false
+  xy: 1, 1
+  size: 535, 254
+  orig: 571, 285
+  offset: 16, 12
+  index: -1
+Penguin-2
+  rotate: true
+  xy: 538, 1
+  size: 490, 261
+  orig: 571, 285
+  offset: 16, 12
+  index: -1
+Penguin-3
+  rotate: false
+  xy: 1, 257
+  size: 502, 254
+  orig: 571, 285
+  offset: 18, 14
+  index: -1

@@ -1,0 +1,47 @@
+penguin_cape.png
+size: 1971, 288
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Penguin-1
+  rotate: false
+  xy: 1, 1
+  size: 571, 285
+  orig: 571, 285
+  offset: 0, 0
+  index: -1
+Penguin-2
+  rotate: false
+  xy: 574, 1
+  size: 571, 285
+  orig: 571, 285
+  offset: 0, 0
+  index: -1
+Penguin-3
+  rotate: false
+  xy: 1147, 1
+  size: 571, 285
+  orig: 571, 285
+  offset: 0, 0
+  index: -1
+Red-Cape-1
+  rotate: true
+  xy: 1720, 1
+  size: 286, 82
+  orig: 286, 82
+  offset: 0, 0
+  index: -1
+Red-Cape-2
+  rotate: true
+  xy: 1804, 1
+  size: 286, 82
+  orig: 286, 82
+  offset: 0, 0
+  index: -1
+Red-Cape-3
+  rotate: true
+  xy: 1888, 1
+  size: 286, 82
+  orig: 286, 82
+  offset: 0, 0
+  index: -1
