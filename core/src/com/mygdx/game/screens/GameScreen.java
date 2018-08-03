@@ -18,7 +18,6 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -33,8 +32,6 @@ import java.util.List;
 public class GameScreen implements Screen {
 
   private final FlapGame game;
-  private static final int WORLD_WIDTH = 18;
-  private static final int WORLD_HEIGHT = 32;
 
   private FlapWorld flapWorld;
   private Box2DDebugRenderer debugRenderer;
@@ -44,6 +41,7 @@ public class GameScreen implements Screen {
   
   private Pixmap pixmap;
   private List<Sprite> randomSprites = new ArrayList<>();
+  private Texture randomObstacleTexture;
 
   Stage stageHUD;
   private TextureAtlas bobAtlas;
@@ -62,12 +60,14 @@ public class GameScreen implements Screen {
     this.game = game;
     flapWorld = new FlapWorld();
     debugRenderer = new Box2DDebugRenderer(true,true,true,true,true,true);
-    camera = new OrthographicCamera(); //TODO use Viewports
-    worldViewport = new StretchViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+    camera = new OrthographicCamera();
+    worldViewport = new StretchViewport(FlapWorld.WORLD_SCREEN_WIDTH, FlapWorld.WORLD_SCREEN_HEIGHT, camera);
     
     pixmap = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
-    pixmap.setColor(Color.RED);
+    pixmap.setColor(Color.DARK_GRAY);
     pixmap.fill();
+
+    randomObstacleTexture = new Texture(pixmap);
 
 //    addRandomSprite(0, 0, 10, 10);
 //    addRandomSprite(30, -5, 10, 10);
@@ -87,13 +87,13 @@ public class GameScreen implements Screen {
 
     TextureRegion backgroundTexture = new TextureRegion(new Texture("scene-1.png"));
     backgroundOne = new Sprite(backgroundTexture);
-    backgroundOne.setSize(100, WORLD_HEIGHT*1.5f);
-    backgroundOne.setCenterY(0);
+    backgroundOne.setSize(100, FlapWorld.WORLD_HEIGHT);
+    backgroundOne.setY(0);
     backgroundOne.setX(0);
 
     backgroundTwo = new Sprite(backgroundTexture);
-    backgroundTwo.setSize(100, WORLD_HEIGHT*1.5f);
-    backgroundTwo.setCenterY(0);
+    backgroundTwo.setSize(100, FlapWorld.WORLD_HEIGHT);
+    backgroundTwo.setY(0);
     backgroundTwo.setX(98);
 
     initSlider();
@@ -150,13 +150,21 @@ public class GameScreen implements Screen {
     Vector2 bodyPosition = bobBody.getPosition();
 
 //    camera.zoom = 3f;
-    camera.position.set(bodyPosition.x + 4, bodyPosition.y,0);
+    if (bodyPosition.y > FlapWorld.WORLD_HEIGHT - FlapWorld.WORLD_SCREEN_HEIGHT/2) {
+      camera.position.set(bodyPosition.x + 4, FlapWorld.WORLD_HEIGHT - FlapWorld.WORLD_SCREEN_HEIGHT/2, 0);
+    } else if (bodyPosition.y < FlapWorld.WORLD_SCREEN_HEIGHT/2) {
+      camera.position.set(bodyPosition.x + 4, FlapWorld.WORLD_SCREEN_HEIGHT/2, 0);
+    } else {
+      camera.position.set(bodyPosition.x + 4, bodyPosition.y, 0);
+    }
+    
     worldViewport.apply();
 
     game.batch.setProjectionMatrix(camera.combined); //IMPORTANT
     game.batch.begin();
 
     renderBackground();
+    renderObstacles();
     renderBob(delta);
 
     game.batch.end();
@@ -194,8 +202,15 @@ public class GameScreen implements Screen {
         1, 1,
         bobBody.getAngle()*MathUtils.radiansToDegrees
         );
-
-
+  }
+  
+  private void renderObstacles() {
+    for (Body obstacle : flapWorld.randomObstacles.getStaticObstacles()) {
+      Vector2 position = obstacle.getPosition();
+      float width = ((Vector2)obstacle.getUserData()).x;
+      float height = ((Vector2)obstacle.getUserData()).y;
+      game.batch.draw(randomObstacleTexture, position.x - width/2, position.y - height/2, width, height);
+    }
   }
 
   private void renderBackground() {

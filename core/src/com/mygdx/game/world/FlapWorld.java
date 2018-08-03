@@ -1,18 +1,23 @@
 package com.mygdx.game.world;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.mygdx.game.character.Bob;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FlapWorld {
-  
+
+  public static final float WORLD_SCREEN_WIDTH = 18;
+  public static final float WORLD_SCREEN_HEIGHT = 32;
+
+  public static final float WORLD_HEIGHT = WORLD_SCREEN_HEIGHT * 1.2f;
+  public static final float FLOOR_HEIGHT = 6;
+
+
   public World world;
-//  public Body body;
+  public RandomObstacles randomObstacles;
+  //  public Body body;
   private Body floor;
   private Body ceiling;
   private Body platform;
@@ -21,23 +26,21 @@ public class FlapWorld {
 
   public List<Body> staticObstacles;
 
-  private boolean controllable;
-  private float velocityX = 5;
-  private float velocityY;
-  
   public FlapWorld() {
     world = new World(new Vector2(0, -10), true);
-    
-    createFloor();
-    createCeiling();
-    createMovingObject();
+    randomObstacles = new RandomObstacles(world);
+    randomObstacles.initialGenerate();
 
-    staticObstacles = new ArrayList<>();
-    staticObstacles.add(createStaticObstacle(30, -4, 3, 3));
-    staticObstacles.add(createStaticObstacle(50, -5, 4, 4));
-    staticObstacles.add(createStaticObstacle(80, 7, 2, 5));
+//    createFloor();
+//    createCeiling();
+//    createMovingObject();
 
     bob = new Bob(world);
+
+//    staticObstacles = new ArrayList<>();
+//    staticObstacles.add(createStaticObstacle(30f, -4f, 3f, 3f));
+//    staticObstacles.add(createStaticObstacle(50f, -5f, 4f, 4f));
+//    staticObstacles.add(createStaticObstacle(80f, 7f, 2f, 5f));
 
   /*  world.setContactListener(new ContactListener() {
       @Override
@@ -72,12 +75,12 @@ public class FlapWorld {
       }
     });*/
   }
-  
+
   private void createFloor() {
     // create a new body definition (type and location)
     BodyDef bodyDef = new BodyDef();
     bodyDef.type = BodyDef.BodyType.StaticBody;
-    bodyDef.position.set(0, -10);
+    bodyDef.position.set(0, FLOOR_HEIGHT);
     // add it to the world
     floor = world.createBody(bodyDef);
     // set the shape (here we use a box 50 meters wide, 1 meter tall )
@@ -90,39 +93,39 @@ public class FlapWorld {
     shape.dispose();
   }
 
-  private void createCeiling() {
-    BodyDef bodyDef = new BodyDef();
-    bodyDef.type = BodyDef.BodyType.StaticBody;
-    bodyDef.position.set(0, 15);
+//  private void createCeiling() {
+//    BodyDef bodyDef = new BodyDef();
+//    bodyDef.type = BodyDef.BodyType.StaticBody;
+//    bodyDef.position.set(0, WORLD_HEIGHT);
+//
+//    ceiling = world.createBody(bodyDef);
+//    PolygonShape shape = new PolygonShape();
+//    shape.setAsBox(100, 1);
+//
+//    ceiling.createFixture(shape, 0.0f);
+//    shape.dispose();
+//  }
+//
+//  private Body createStaticObstacle(float x, float y, float width, float height) {
+//    BodyDef bodyDef = new BodyDef();
+//    bodyDef.type = BodyDef.BodyType.StaticBody;
+//    bodyDef.position.set(x, y);
+//
+//    Body body = world.createBody(bodyDef);
+//    PolygonShape shape = new PolygonShape();
+//    shape.setAsBox(width, height);
+//
+//    body.createFixture(shape, 0.0f);
+//    shape.dispose();
+//    return body;
+//  }
 
-    ceiling = world.createBody(bodyDef);
-    PolygonShape shape = new PolygonShape();
-    shape.setAsBox(100, 1);
-
-    ceiling.createFixture(shape, 0.0f);
-    shape.dispose();
-  }
-
-  private Body createStaticObstacle(float x, float y, float width, float height) {
-    BodyDef bodyDef = new BodyDef();
-    bodyDef.type = BodyDef.BodyType.StaticBody;
-    bodyDef.position.set(x, y);
-
-    Body body = world.createBody(bodyDef);
-    PolygonShape shape = new PolygonShape();
-    shape.setAsBox(width, height);
-
-    body.createFixture(shape, 0.0f);
-    shape.dispose();
-    return body;
-  }
-  
-  private void createMovingObject(){
+  private void createMovingObject() {
 
     //create a new body definition (type and location)
     BodyDef bodyDef = new BodyDef();
     bodyDef.type = BodyDef.BodyType.KinematicBody;
-    bodyDef.position.set(0,-12);
+    bodyDef.position.set(0, -12);
 
 
     // add it to the world
@@ -130,7 +133,7 @@ public class FlapWorld {
 
     // set the shape (here we use a box 50 meters wide, 1 meter tall )
     PolygonShape shape = new PolygonShape();
-    shape.setAsBox(1,1);
+    shape.setAsBox(1, 1);
 
     // set the properties of the object ( shape, weight, restitution(bouncyness)
     FixtureDef fixtureDef = new FixtureDef();
@@ -152,6 +155,11 @@ public class FlapWorld {
   }
 
   public void logicStep(float delta) {//call this at the end of the render loop
+    Vector2 bobPosition = bob.body.getPosition();
+
+    randomObstacles.generate(bobPosition.x, WORLD_HEIGHT, WORLD_SCREEN_WIDTH);
+    randomObstacles.cleanup(bobPosition.x, WORLD_SCREEN_WIDTH);
+
     bob.step(delta);
     world.step(delta, 6, 2);
   }
